@@ -1,5 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
+from ratelimit.decorators import ratelimit
 
 from .views import (
     AccountView,
@@ -21,10 +22,11 @@ app_name = 'users'
 public_urlpatterns = [
     path(
         'login/',
-        LoginView.as_view(
+        ratelimit(key='ip', rate='5/m', block=True)
+        (LoginView.as_view(
             template_name='users/login.html',
             redirect_authenticated_user=True
-        ),
+        )),
         name='login'
     ),
 
@@ -35,7 +37,7 @@ public_urlpatterns = [
 
 urlpatterns = [
     path('account/', include([
-        path('', AccountView.as_view(), name='account'),
+        path('', ratelimit(key='ip', method='GET', rate='5/m', block=True)(AccountView.as_view()), name='account'),
         path('become/', become, name='become'),
         path('password/', include([
             path('', EmailChangePasswordView.as_view(), name='email_change_confirm_password'),
