@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
 from ratelimit.decorators import ratelimit
@@ -21,12 +22,10 @@ app_name = 'users'
 
 public_urlpatterns = [
     path(
-        'login/',
-        ratelimit(key='ip', rate='5/m', block=True)
-        (LoginView.as_view(
+        'login/', LoginView.as_view(
             template_name='users/login.html',
             redirect_authenticated_user=True
-        )),
+        ),
         name='login'
     ),
 
@@ -37,26 +36,30 @@ public_urlpatterns = [
 
 urlpatterns = [
     path('account/', include([
-        path('', ratelimit(key='ip', method='GET', rate='5/m', block=True)(AccountView.as_view()), name='account'),
+        path('', AccountView.as_view(), name='account'),
         path('become/', become, name='become'),
         path('password/', include([
             path('', EmailChangePasswordView.as_view(), name='email_change_confirm_password'),
             path(
                 'change/',
-                auth_views.PasswordChangeView.as_view(
+                ratelimit(key='user', method='POST', rate=settings.DEFAULT_RATE_LIMIT, block=True)
+                (auth_views.PasswordChangeView.as_view(
                     template_name="users/change_password.html",
                     success_url=reverse_lazy('users:account')
-                ),
+                )),
                 name='password_change',
             ),
             path(
                 'reset/',
-                auth_views.PasswordResetView.as_view(
-                    template_name='users/password_reset/form.html',
-                    email_template_name='users/password_reset/email.txt',
-                    success_url=reverse_lazy('users:password_reset_done')
-                ),
-                name='password_reset',
+                ratelimit(key='post:email', method='POST', rate=settings.DEFAULT_RATE_LIMIT, block=True)
+                (ratelimit(key='ip', method='POST', rate=settings.DEFAULT_RATE_LIMIT, block=True)
+                    (
+                        auth_views.PasswordResetView.as_view(
+                            template_name='users/password_reset/form.html',
+                            email_template_name='users/password_reset/email.txt',
+                            success_url=reverse_lazy('users:password_reset_done')
+                        ))),
+                name='password_reset'
             ),
             path(
                 'reset/done/',

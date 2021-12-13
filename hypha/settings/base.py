@@ -664,3 +664,7 @@ INTACCT_SENDER_PASSWORD = env.str('INTACCT_SENDER_PASSWORD', '')
 INTACCT_USER_ID = env.str('INTACCT_USER_ID', '')
 INTACCT_COMPANY_ID = env.str('INTACCT_COMPANY_ID', '')
 INTACCT_USER_PASSWORD = env.str('INTACCT_USER_PASSWORD', '')
+
+# Form Rate-Limit Configuration
+# DEFAULT_RATE_LIMIT is used by all the forms unless which is set 5 requests/minute by default
+DEFAULT_RATE_LIMIT = env.get('DEFAULT_RATE_LIMIT', '5/m')
