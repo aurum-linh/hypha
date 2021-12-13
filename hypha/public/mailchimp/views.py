@@ -10,12 +10,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
 from django.views.generic.edit import FormMixin
 from mailchimp3 import MailChimp
+from ratelimit.decorators import ratelimit
 
 from .forms import NewsletterForm
 
 logger = logging.getLogger(__name__)
 
 
+@method_decorator(ratelimit(key='ip', rate=settings.DEFAULT_RATE_LIMIT, method='POST', block=True), name='dispatch')
+@method_decorator(ratelimit(key='post:email', rate=settings.DEFAULT_RATE_LIMIT, method='POST', block=True), name='dispatch')
 @method_decorator(csrf_exempt, name='dispatch')
 class MailchimpSubscribeView(FormMixin, RedirectView):
     form_class = NewsletterForm
