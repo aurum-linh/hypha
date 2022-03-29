@@ -666,5 +666,5 @@ INTACCT_COMPANY_ID = env.str('INTACCT_COMPANY_ID', '')
 INTACCT_USER_PASSWORD = env.str('INTACCT_USER_PASSWORD', '')
 
 # Form Rate-Limit Configuration
-# DEFAULT_RATE_LIMIT is used by all the forms unless which is set 5 requests/minute by default
-DEFAULT_RATE_LIMIT = env.get('DEFAULT_RATE_LIMIT', '5/m')
+# DEFAULT_RATE_LIMIT is used by login, password, 2FA and Mailchimp forms.
+DEFAULT_RATE_LIMIT = env.str('DEFAULT_RATE_LIMIT', '5/m')
