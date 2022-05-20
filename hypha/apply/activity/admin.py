@@ -8,7 +8,7 @@ class MessageInline(admin.TabularInline):
     readonly_fields = ('type', 'recipient', 'content', 'status', 'external_id')
     can_delete = False
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
 
@@ -18,10 +18,10 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('type', 'source', 'when', 'by')
     inlines = (MessageInline,)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj=None):
         return False
 
-    def has_delete_permission(self, *args):
+    def has_delete_permission(self, request, obj=None):
         return False
 
 
