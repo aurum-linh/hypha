@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     'django_bleach',
     'django_fsm',
     'django_pwned_passwords',
+    'django_slack',
     'django_otp',
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_static',
@@ -523,6 +524,12 @@ SLACK_DESTINATION_URL = env.str('SLACK_DESTINATION_URL', None)
 SLACK_DESTINATION_ROOM = env.str('SLACK_DESTINATION_ROOM', None)
 SLACK_DESTINATION_ROOM_COMMENTS = env.str('SLACK_DESTINATION_ROOM_COMMENTS', None)
 SLACK_TYPE_COMMENTS = env.list('SLACK_TYPE_COMMENTS', [])
+
+# Django Slack settings
+SLACK_TOKEN = env.str('SLACK_TOKEN', None)
+SLACK_BACKEND = 'django_slack.backends.CeleryBackend'  # UrllibBackend can be used for async
+if SLACK_DESTINATION_URL:
+    SLACK_ENDPOINT_URL = SLACK_DESTINATION_URL
 
 # Automatic transition settings
 TRANSITION_AFTER_REVIEWS = env.bool('TRANSITION_AFTER_REVIEWS', False)
